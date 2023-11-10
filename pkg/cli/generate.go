@@ -176,7 +176,7 @@ func RunGenerateCommand(args *GenerateArgs) {
 		if args.EndTest < 0 {
 			args.EndTest = len(testCases) - 1
 		}
-		if i >= args.StartTest && i <= args.EndTest {
+		if i >= args.StartTest-1 && i <= args.EndTest-1 {
 			fmt.Printf("starting test case #%d\n", i+1)
 
 			result := interpreter.ExecuteTestCase(testCase)
