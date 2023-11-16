@@ -193,14 +193,15 @@ func RunGenerateCommand(args *GenerateArgs) {
 				logrus.Warn("failing fast due to failure")
 				break
 			}
-		}
-		fmt.Printf("Cooldowning for %d seconds after finishing test case %d ...\n", interpreter.Config.CooldownSeconds, i+1)
-		count := interpreter.Config.CooldownSeconds
-		interval := 5
-		for count > 0 {
-			fmt.Printf("Cooling down for another %d seconds ...\n", count)
-			time.Sleep(time.Duration(interval * int(time.Second)))
-			count -= interval
+
+			fmt.Printf("Cooldowning for %d seconds after finishing test case %d ...\n", interpreter.Config.CooldownSeconds, i+1)
+			count := interpreter.Config.CooldownSeconds
+			interval := 5
+			for count > 0 {
+				fmt.Printf("Cooling down for another %d seconds ...\n", count)
+				time.Sleep(time.Duration(interval * int(time.Second)))
+				count -= interval
+			}
 		}
 	}
 
