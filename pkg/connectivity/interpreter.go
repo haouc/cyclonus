@@ -29,6 +29,7 @@ type InterpreterConfig struct {
 	IgnoreLoopback                   bool
 	JobTimeoutSeconds                int
 	FailFast                         bool
+	CooldownSeconds                  int
 }
 
 func (i *InterpreterConfig) PerturbationWaitDuration() time.Duration {

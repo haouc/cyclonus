@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/mattfenwick/collections/pkg/json"
 	"github.com/mattfenwick/cyclonus/pkg/connectivity"
@@ -46,8 +47,9 @@ type GenerateArgs struct {
 	JunitResultsFile          string
 	ImageRegistry             string
 	//BatchJobs                 bool
-	StartTest int
-	EndTest   int
+	StartTest       int
+	EndTest         int
+	CooldownSeconds int
 }
 
 func SetupGenerateCommand() *cobra.Command {
@@ -92,6 +94,7 @@ func SetupGenerateCommand() *cobra.Command {
 
 	command.Flags().IntVar(&args.StartTest, "start-test-case", -1, "the test case to start with if set")
 	command.Flags().IntVar(&args.EndTest, "end-test-case", -1, "the test case to end if set")
+	command.Flags().IntVar(&args.CooldownSeconds, "cooldown-seconds", 300, "the cooldown time in sec after every test case")
 
 	return command
 }
@@ -132,6 +135,7 @@ func RunGenerateCommand(args *GenerateArgs) {
 		IgnoreLoopback:                   args.IgnoreLoopback,
 		JobTimeoutSeconds:                args.JobTimeoutSeconds,
 		FailFast:                         args.FailFast,
+		CooldownSeconds:                  args.CooldownSeconds,
 	}
 	interpreter := connectivity.NewInterpreter(kubernetes, resources, interpreterConfig)
 	printer := &connectivity.Printer{
@@ -189,6 +193,14 @@ func RunGenerateCommand(args *GenerateArgs) {
 				logrus.Warn("failing fast due to failure")
 				break
 			}
+		}
+		fmt.Printf("Cooldowning for %d seconds after finishing test case %d ...\n", interpreter.Config.CooldownSeconds, i+1)
+		count := interpreter.Config.CooldownSeconds
+		interval := 5
+		for count > 0 {
+			fmt.Printf("Cooling down for another %d seconds ...\n", count)
+			time.Sleep(time.Duration(interval * int(time.Second)))
+			count -= interval
 		}
 	}
 
