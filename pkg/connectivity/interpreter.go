@@ -75,23 +75,37 @@ func (t *Interpreter) ExecuteTestCase(testCase *generator.TestCase) *Result {
 		Policies:   []*networkingv1.NetworkPolicy{},
 	}
 
-	if t.Config.ResetClusterBeforeTestCase {
-		err = testCaseState.ResetClusterState()
-		if err != nil {
-			result.Err = err
-			return result
-		}
-		logrus.Info("cluster state reset")
+	err = testCaseState.ResetClusterState()
+	if err != nil {
+		result.Err = err
+		return result
 	}
+	fmt.Println("***** cluster state reset *****")
 
-	if t.Config.VerifyClusterStateBeforeTestCase {
-		err = testCaseState.VerifyClusterState()
-		if err != nil {
-			result.Err = err
-			return result
-		}
-		logrus.Info("cluster state verified")
+	err = testCaseState.VerifyClusterState()
+	if err != nil {
+		result.Err = err
+		return result
 	}
+	fmt.Println("***** cluster state verified *****")
+
+	// if t.Config.ResetClusterBeforeTestCase {
+	// 	err = testCaseState.ResetClusterState()
+	// 	if err != nil {
+	// 		result.Err = err
+	// 		return result
+	// 	}
+	// 	logrus.Info("cluster state reset")
+	// }
+
+	// if t.Config.VerifyClusterStateBeforeTestCase {
+	// 	err = testCaseState.VerifyClusterState()
+	// 	if err != nil {
+	// 		result.Err = err
+	// 		return result
+	// 	}
+	// 	logrus.Info("cluster state verified")
+	// }
 
 	// perform perturbations one at a time, and run a probe after each change
 	for stepIndex, step := range testCase.Steps {
